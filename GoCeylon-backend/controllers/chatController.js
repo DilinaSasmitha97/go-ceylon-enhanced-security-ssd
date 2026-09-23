@@ -1,8 +1,6 @@
 const Location = require('../models/LocationModel');
-//const { GoogleGenAI } = require("@google/genai");
-//const ai = new GoogleGenAI({ apiKey: "AIzaSyAu7_I_t-W5KwqGIDn1DL0RxTYE9lUQjls" });
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const genAI = new GoogleGenerativeAI("AIzaSyAu7_I_t-W5KwqGIDn1DL0RxTYE9lUQjls");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 let chatHistory = [];
 

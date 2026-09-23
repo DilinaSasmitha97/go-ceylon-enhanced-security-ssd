@@ -1,3 +1,8 @@
-
-/GoCeylon-backend/node_modules
-
+node_modules/
+/GoCeylon-backend/node_modules/
+/GoCeylon-frontend/node_modules/
+.env
+*.env
+.env.local
+reports/evidence/
+*.md

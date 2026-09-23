@@ -4,8 +4,7 @@ const BusinessUser = require('../models/BusinessUserModel');
 const Admin = require('../models/AdminModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-const SECRET_KEY = "your_secret_key"; // Change this to a secure key
+const SECRET_KEY = process.env.JWT_SECRET;
 
 // Login function
 exports.login = async (req, res) => {
