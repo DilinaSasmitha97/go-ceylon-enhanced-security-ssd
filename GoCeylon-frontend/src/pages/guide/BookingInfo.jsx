@@ -20,7 +20,9 @@ export default function BookingInfo() {
     useEffect(() => {
         // Fetch the booking data using the booking ID from the URL
         axios
-            .get(`${API_BASE_URL}/booking/${id}`)
+            .get(`${API_BASE_URL}/booking/${id}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+            })
             .then((response) => {
                 console.log("API Response:", response.data); // Log the response to check the data
                 setBooking(response.data); // Set booking directly with response.data
@@ -122,7 +124,9 @@ export default function BookingInfo() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Refresh booking data to update status
-            const response = await axios.get(`${API_BASE_URL}/booking/${id}`);
+            const response = await axios.get(`${API_BASE_URL}/booking/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             setBooking(response.data);
         } catch (error) {
             console.error('Error starting tour:', error);
@@ -139,7 +143,9 @@ export default function BookingInfo() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Refresh booking data to update status
-            const response = await axios.get(`${API_BASE_URL}/booking/${id}`);
+            const response = await axios.get(`${API_BASE_URL}/booking/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             setBooking(response.data);
         } catch (error) {
             console.error('Error starting tour:', error);
@@ -153,7 +159,9 @@ export default function BookingInfo() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Refresh booking data to update status
-            const response = await axios.get(`${API_BASE_URL}/booking/${id}`);
+            const response = await axios.get(`${API_BASE_URL}/booking/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             setBooking(response.data);
         } catch (error) {
             console.error('Error starting tour:', error);
