@@ -1,0 +1,5 @@
+# Gitleaks ignore list
+# Local environment variables file (never committed to git)
+GoCeylon-backend/.env:generic-api-key:3
+GoCeylon-backend/.env:mongodb-connection-string:2
+GoCeylon-backend/.env:gcp-api-key:4

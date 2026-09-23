@@ -14,3 +14,10 @@ description = "MongoDB Connection String with Embedded Credentials"
 regex = '''mongodb(\+srv)?:\/\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+'''
 secretGroup = 0
 entropy = 0.0
+
+[allowlist]
+description = "Ignore local environment files and evidence reports"
+paths = [
+    '''.*\.env$''',
+    '''reports/evidence/.*'''
+]
