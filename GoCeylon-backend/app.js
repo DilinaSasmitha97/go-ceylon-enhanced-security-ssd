@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -44,7 +45,7 @@ app.use("/api/business", businessRouter);
 app.use("/businessuser", businessUserRouter);
 
 // MongoDB Connection
-const mongoURI = "mongodb+srv://admin:JbkMQtmZEYD8gTrP@cluster0.doxbw.mongodb.net/";
+const mongoURI = process.env.MONGO_URI;
 
 mongoose
     .connect(mongoURI, {
