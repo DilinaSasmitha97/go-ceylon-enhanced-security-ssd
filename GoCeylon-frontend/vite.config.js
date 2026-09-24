@@ -3,8 +3,41 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path'; // Import path module
 
+// Security headers for the pages Vite serves (VULN-08): the app must not be
+// framed by other sites (clickjacking) and responses must not be MIME-sniffed.
+const securityHeaders = {
+  'X-Frame-Options': 'DENY',
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), payment=()',
+  'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+};
+
+// Sets the headers on every response, including 304 Not Modified. Vite's
+// server.headers option skips 304 replies, so a browser revalidating a page it
+// cached before this fix kept the old, frameable copy.
+const applySecurityHeaders = (req, res, next) => {
+  for (const [name, value] of Object.entries(securityHeaders)) {
+    res.setHeader(name, value);
+  }
+  next();
+};
+
+const securityHeadersPlugin = {
+  name: 'security-headers',
+  configureServer(server) {
+    server.middlewares.use(applySecurityHeaders);
+  },
+  configurePreviewServer(server) {
+    server.middlewares.use(applySecurityHeaders);
+  },
+};
+
 export default defineConfig({
   plugins: [
+    securityHeadersPlugin,
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -36,9 +69,6 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     protocol: "ws",
-    hmr: {
-      host: '192.168.8.112',
-    },
     watch: {
       usePolling: true,
     },
