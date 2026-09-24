@@ -11,13 +11,28 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        console.log("Authorization Header:", req.header('Authorization'));
+        // VULN-05 (NoSQL Injection) fix:
+        // Reject any credential that is not a plain string. This blocks payloads
+        // like { "email": { "$regex": "^admin" } }, where an attacker sends a
+        // MongoDB query operator instead of a real email to probe the database.
+        if (typeof email !== 'string' || typeof password !== 'string') {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
 
         let user = null;
         let userType = '';
 
+        // NOTE ON THE nosemgrep ANNOTATIONS BELOW:
+        // Semgrep's njsscan rule "node_nosqli_injection" flags every
+        // findOne({ email }) call as possible NoSQL injection. Here it is a
+        // FALSE POSITIVE: the typeof guard above guarantees `email` is a plain
+        // string before it reaches any query, so an operator object such as
+        // { "$regex": ... } can never be passed. The rule is pattern-based and
+        // cannot see that upstream guard, so we suppress it per-line with a
+        // justification instead of disabling the rule globally.
+
         // Check Admin first
-        user = await Admin.findOne({ email }).select('+password');
+        user = await Admin.findOne({ email }).select('+password'); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
         if (user) {
             userType = 'admin';
             const token = jwt.sign(
@@ -29,27 +44,29 @@ exports.login = async (req, res) => {
 
         // Then check other user types
         if (!user) {
-            user = await Tourist.findOne({ email }).select('+password');
+            user = await Tourist.findOne({ email }).select('+password'); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
             if (user) userType = 'tourist';
         }
         if (!user) {
-            user = await Guide.findOne({ email }).select('+password');
+            user = await Guide.findOne({ email }).select('+password'); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
             if (user) userType = 'guide';
         }
         if (!user) {
-            user = await BusinessUser.findOne({ email }).select('+password');
+            user = await BusinessUser.findOne({ email }).select('+password'); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
             if (user) userType = 'business_user';
         }
 
-        // If user not found in any model
+        // VULN-05 (User Enumeration) fix:
+        // Use ONE identical message whether the email is unknown or the password
+        // is wrong. Different messages let an attacker tell which emails exist.
         if (!user) {
-            return res.status(401).json({ message: "Invalid email" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: "Invalid email or password--" });
+            return res.status(401).json({ message: "Invalid email or password" });
         }
 
         // Generate JWT token
