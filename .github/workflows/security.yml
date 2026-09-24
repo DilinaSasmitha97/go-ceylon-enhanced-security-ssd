@@ -1,0 +1,238 @@
+# Security pipeline (DevSecOps) for GoCeylon.
+# Runs on every push and pull request so a vulnerability is caught before it
+# reaches main, instead of being found later in a manual review:
+#   secrets       Gitleaks  - hardcoded passwords / API keys in new commits (cf. VULN-01)
+#   sast          Semgrep   - insecure code patterns: XSS, NoSQL injection, ... (cf. VULN-04/05)
+#   dependencies  npm audit - libraries with known vulnerabilities (OWASP A06)
+#   tests         Jest      - security regression tests (VULN-02/03/08 ...)
+#   dast          ZAP       - baseline scan of the running backend (cf. VULN-08)
+
+name: Security pipeline
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  secrets:
+    name: Secrets scan (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz | tar -xz gitleaks
+          ./gitleaks version
+
+      # Blocking: only the commits in this push / pull request. The original
+      # project history still contains the secrets found in VULN-01; those were
+      # rotated and are covered by the full-history report below.
+      - name: Scan new commits (blocking)
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$EVENT" = "pull_request" ]; then
+            RANGE="origin/$BASE_REF..HEAD"
+          elif [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            RANGE="$BEFORE..HEAD"
+          elif [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            RANGE="origin/main..HEAD"
+          else
+            RANGE="HEAD~1..HEAD"
+          fi
+          echo "Scanning commits: $RANGE"
+          ./gitleaks detect --source . --config .gitleaks.toml --log-opts="$RANGE" \
+            --redact --verbose --report-format json --report-path gitleaks-new-commits.json
+
+      - name: Scan full history (report only)
+        if: always()
+        continue-on-error: true
+        run: |
+          ./gitleaks detect --source . --config .gitleaks.toml --redact \
+            --report-format json --report-path gitleaks-full-history.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gitleaks-report
+          path: gitleaks-*.json
+          if-no-files-found: ignore
+
+  sast:
+    name: Static analysis (Semgrep)
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep:1.99.0
+    steps:
+      - uses: actions/checkout@v4
+
+      # Registry rule packs plus project rules in .semgrep/. node_password and
+      # node_username are excluded: in this code base they only match form
+      # validation messages such as "Password is required" (false positives).
+      - name: Semgrep scan
+        run: |
+          semgrep scan \
+            --config p/owasp-top-ten \
+            --config p/javascript \
+            --config p/react \
+            --config p/xss \
+            --config p/nodejsscan \
+            --config p/secrets \
+            --config .semgrep/ \
+            --exclude-rule ajinabraham.njsscan.generic.hardcoded_secrets.node_password \
+            --exclude-rule ajinabraham.njsscan.generic.hardcoded_secrets.node_username \
+            --exclude reports --exclude security-poc \
+            --metrics=off \
+            --json-output=semgrep.json \
+            --sarif-output=semgrep.sarif \
+            --text-output=semgrep.txt
+
+      # Blocking on ERROR severity only; WARNING/INFO findings stay in the report.
+      - name: Summarise findings and fail on ERROR severity
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+          results = json.load(open("semgrep.json"))["results"]
+          counts = {}
+          for r in results:
+              counts[r["extra"]["severity"]] = counts.get(r["extra"]["severity"], 0) + 1
+          errors = [r for r in results if r["extra"]["severity"] == "ERROR"]
+          lines = ["## Semgrep", "", "| Severity | Findings |", "|---|---|"]
+          lines += [f"| {s} | {counts.get(s, 0)} |" for s in ("ERROR", "WARNING", "INFO")]
+          if errors:
+              lines += ["", "| Rule | Location |", "|---|---|"]
+              lines += [f"| {r['check_id'].split('.')[-1]} | {r['path']}:{r['start']['line']} |" for r in errors]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
+              summary.write("\n".join(lines) + "\n")
+          print("\n".join(lines))
+          sys.exit(1 if errors else 0)
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-report
+          path: |
+            semgrep.json
+            semgrep.sarif
+            semgrep.txt
+          if-no-files-found: ignore
+
+  dependencies:
+    name: Dependency audit (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [GoCeylon-backend, GoCeylon-frontend]
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Save full audit report
+        run: npm audit --omit=dev --json > npm-audit.json || true
+
+      # Blocking: production dependencies with high or critical advisories
+      - name: npm audit (fail on high or critical)
+        run: npm audit --omit=dev --audit-level=high
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npm-audit-${{ matrix.app }}
+          path: ${{ matrix.app }}/npm-audit.json
+          if-no-files-found: ignore
+
+  tests:
+    name: Security regression tests (Jest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: GoCeylon-backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: GoCeylon-backend/package-lock.json
+
+      - name: Cache MongoDB binary for mongodb-memory-server
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('GoCeylon-backend/package-lock.json') }}
+
+      - run: npm ci
+      - run: npm test
+
+  dast:
+    name: Dynamic scan (ZAP baseline)
+    runs-on: ubuntu-latest
+    needs: tests
+    permissions:
+      contents: read
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: GoCeylon-backend/package-lock.json
+
+      - name: Install backend
+        working-directory: GoCeylon-backend
+        run: npm ci
+
+      # Throwaway values for this CI run only; no real secrets are used
+      - name: Start backend
+        working-directory: GoCeylon-backend
+        env:
+          MONGO_URI: mongodb://localhost:27017/goceylon-ci
+          JWT_SECRET: ci-only-${{ github.run_id }}-${{ github.run_attempt }}
+          COOKIE_SECRET: ci-only-cookie-${{ github.run_id }}
+          FRONTEND_URL: http://localhost:5173
+          PORT: 3000
+        run: |
+          nohup node server.js > backend.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/location > /dev/null && break
+            sleep 2
+          done
+          curl -sf http://localhost:3000/location > /dev/null || { cat backend.log; exit 1; }
+
+      # Report only (-I: warnings do not fail the job); the HTML report is uploaded as an artifact
+      - name: ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: http://localhost:3000/location
+          cmd_options: -I
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap-baseline-report
