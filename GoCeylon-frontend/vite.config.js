@@ -15,8 +15,29 @@ const securityHeaders = {
   'Cross-Origin-Resource-Policy': 'same-origin',
 };
 
+// Sets the headers on every response, including 304 Not Modified. Vite's
+// server.headers option skips 304 replies, so a browser revalidating a page it
+// cached before this fix kept the old, frameable copy.
+const applySecurityHeaders = (req, res, next) => {
+  for (const [name, value] of Object.entries(securityHeaders)) {
+    res.setHeader(name, value);
+  }
+  next();
+};
+
+const securityHeadersPlugin = {
+  name: 'security-headers',
+  configureServer(server) {
+    server.middlewares.use(applySecurityHeaders);
+  },
+  configurePreviewServer(server) {
+    server.middlewares.use(applySecurityHeaders);
+  },
+};
+
 export default defineConfig({
   plugins: [
+    securityHeadersPlugin,
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -48,12 +69,8 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     protocol: "ws",
-    headers: securityHeaders,
     watch: {
       usePolling: true,
     },
-  },
-  preview: {
-    headers: securityHeaders,
   },
 });
