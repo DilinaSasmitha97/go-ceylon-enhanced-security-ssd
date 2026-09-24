@@ -1,0 +1,18 @@
+rules:
+  - id: react-unsanitized-dangerouslysetinnerhtml
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      HTML from data is rendered with dangerouslySetInnerHTML without DOMPurify.sanitize().
+      Stored content (e.g. descriptions saved by an admin or business user) can run
+      scripts in every visitor's browser (stored XSS, CWE-79).
+    metadata:
+      cwe: "CWE-79: Improper Neutralization of Input During Web Page Generation"
+      owasp: "A03:2021 - Injection"
+    patterns:
+      - pattern: |
+          <$EL dangerouslySetInnerHTML={{__html: $HTML}} />
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(...)}} />
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{__html: "..."}} />

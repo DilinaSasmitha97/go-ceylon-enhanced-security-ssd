@@ -3,3 +3,5 @@
 GoCeylon-backend/.env:generic-api-key:3
 GoCeylon-backend/.env:mongodb-connection-string:2
 GoCeylon-backend/.env:gcp-api-key:4
+# Test fixture: tests/setup.js sets a fake JWT secret for the in-memory test run only (not a real secret)
+c3e1f1e3f3097a9f12a904dd8e4610dd25af95ae:GoCeylon-backend/tests/setup.js:jwt-hardcoded-secret:2
