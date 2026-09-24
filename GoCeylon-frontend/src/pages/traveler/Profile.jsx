@@ -25,7 +25,9 @@ export default function Profile() {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/users/${defaultId}`);
+        const response = await axios.get(`${API_BASE_URL}/users/${defaultId}`, {
+          headers: { "Authorization": `Bearer ${token}` },
+        });
         setUser(response.data);
         setFormData(response.data);
       } catch (err) {

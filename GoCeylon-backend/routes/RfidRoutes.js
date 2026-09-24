@@ -12,10 +12,10 @@ router.put('/:id', authMiddleware(['admin']), rfidController.updateRfid);
 // Delete an RFID entry
 router.delete('/:id', authMiddleware(['admin']), rfidController.deleteRfid);
 
-// Get all RFID entries
-router.get('/', rfidController.getAllRfids);
+// Get all RFID entries (admin only: contains passport data)
+router.get('/', authMiddleware(['admin']), rfidController.getAllRfids);
 
 // Get a single RFID entry by ID
-router.get('/:id', rfidController.getRfidById);
+router.get('/:id', authMiddleware(['admin']), rfidController.getRfidById);
 
 module.exports = router;

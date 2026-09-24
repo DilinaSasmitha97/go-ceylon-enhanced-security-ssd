@@ -89,7 +89,9 @@ const sendBookingEmail = async (recipient, subject, message) => {
 // Create Booking and Send Email
 exports.createBooking = async (req, res) => {
     try {
-        const { b_date, b_time, b_location, b_user, b_guide, price, status } = req.body;
+        const { b_date, b_time, b_location, b_guide, price } = req.body;
+        // The booking always belongs to the logged-in tourist, never to a user id sent in the body
+        const b_user = req.user.id;
 
         // Validate IDs
         if (!mongoose.Types.ObjectId.isValid(b_user) || !mongoose.Types.ObjectId.isValid(b_guide)) {
@@ -112,7 +114,7 @@ exports.createBooking = async (req, res) => {
             b_user,
             b_guide,
             price,
-            status: status || 'pending',
+            status: 'pending', // New bookings always start pending; clients cannot confirm their own
         });
 
         await newBooking.save();
@@ -136,15 +138,26 @@ exports.createBooking = async (req, res) => {
     }
 };
 
+// Fields each role is allowed to change on a booking
+const UPDATABLE_BOOKING_FIELDS = {
+    tourist: ['b_date', 'b_time', 'b_location'],
+    guide: ['status'],
+    admin: ['b_date', 'b_time', 'b_location', 'price', 'status'],
+};
+
 // Update an existing booking
 exports.updateBooking = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedData = req.body;
 
-        delete updatedData.b_id;
+        // Only copy the fields this role may change (prevents mass assignment of price, status, b_user...)
+        const allowedFields = UPDATABLE_BOOKING_FIELDS[req.user.userType] || [];
+        const updatedData = {};
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) updatedData[field] = req.body[field];
+        }
 
-        const updatedBooking = await Booking.findByIdAndUpdate(id, updatedData, { new: true });
+        const updatedBooking = await Booking.findByIdAndUpdate(id, updatedData, { new: true, runValidators: true });
         if (!updatedBooking) {
             return res.status(404).json({ message: "Booking not found" });
         }
