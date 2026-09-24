@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const path = require('path');
 
 // Import Routes
@@ -20,22 +21,54 @@ const authMiddleware = require("./middleware/authMiddleware");
 // Initialize Express App
 const app = express();
 
-// Serve static files from the "uploads" directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Security headers (VULN-08). The API only returns JSON and redirects, so the
+// policy can deny everything, including being framed by other sites.
+app.disable('x-powered-by');
+app.use(helmet({
+    contentSecurityPolicy: {
+        useDefaults: false,
+        directives: {
+            defaultSrc: ["'none'"],
+            baseUri: ["'none'"],
+            formAction: ["'none'"],
+            frameAncestors: ["'none'"],
+        },
+    },
+    frameguard: { action: 'deny' },
+}));
+app.use((req, res, next) => {
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+    next();
+});
+
+// Serve static files from the "uploads" directory. The frontend runs on another
+// origin and shows these images, so they may be loaded cross-origin.
+app.use('/uploads', (req, res, next) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    next();
+}, express.static(path.join(__dirname, 'uploads')));
+
+// API responses can contain personal data: never store them in browser or proxy caches
+app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store');
+    next();
+});
 
 const cookieParser = require('cookie-parser');
 
 // Middleware
-const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173', 'http://localhost:3000'];
+// Allowed frontend origins come from the environment (comma-separated), never hardcoded dev URLs
+const allowedOrigins = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
+    // Unknown origins get no CORS headers (the browser blocks them) instead of an error page
+    origin: (origin, callback) => callback(null, !origin || allowedOrigins.includes(origin)),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 600,
 }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(express.json());

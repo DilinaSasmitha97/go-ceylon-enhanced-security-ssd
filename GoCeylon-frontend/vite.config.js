@@ -3,6 +3,18 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path'; // Import path module
 
+// Security headers for the pages Vite serves (VULN-08): the app must not be
+// framed by other sites (clickjacking) and responses must not be MIME-sniffed.
+const securityHeaders = {
+  'X-Frame-Options': 'DENY',
+  'Content-Security-Policy': "frame-ancestors 'none'",
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), payment=()',
+  'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+};
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
@@ -36,11 +48,12 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     protocol: "ws",
-    hmr: {
-      host: '192.168.8.112',
-    },
+    headers: securityHeaders,
     watch: {
       usePolling: true,
     },
+  },
+  preview: {
+    headers: securityHeaders,
   },
 });
