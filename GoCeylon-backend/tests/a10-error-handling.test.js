@@ -78,7 +78,8 @@ describe('A10 controller error messages', () => {
     });
 
     it('does not reveal Mongoose cast errors for malformed ids', async () => {
-        const res = await request(app).get('/guides/location/not-an-object-id');
+        const admin = tokenFor({ _id: new mongoose.Types.ObjectId(), email: 'admin@goceylon.com' }, 'admin');
+        const res = await request(app).get('/users/not-an-object-id').set('Authorization', admin);
         expect(res.status).toBe(500);
         expectNoLeak(res);
     });
