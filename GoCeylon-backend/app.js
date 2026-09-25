@@ -17,6 +17,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const businessRouter = require('./routes/BusinessRoutes');
 const businessUserRouter = require('./routes/BusinessUserRoutes');
 const authMiddleware = require("./middleware/authMiddleware");
+const errorHandler = require("./middleware/errorHandler");
 
 // Initialize Express App
 const app = express();
@@ -88,5 +89,13 @@ app.use("/api/chat", chatRoutes);
 app.use("/admin", adminRoutes);
 app.use("/api/business", businessRouter);
 app.use("/businessuser", businessUserRouter);
+
+// Unknown routes get a JSON 404 instead of Express's default HTML page (A10)
+app.use((req, res) => {
+    res.status(404).json({ message: 'Not found' });
+});
+
+// Central error handler, registered last (A10)
+app.use(errorHandler);
 
 module.exports = app;

@@ -1,4 +1,5 @@
 const BusinessUser = require('../models/BusinessUserModel');
+const { publicError } = require('../utils/errorResponse');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -11,7 +12,7 @@ const getAllBusinessUsers = async (req, res) => {
         }
         return res.status(200).json(users);
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: publicError(err, 'An internal server error occurred') });
     }
 };
 
@@ -24,7 +25,7 @@ const getBusinessUserById = async (req, res) => {
         }
         return res.status(200).json(user);
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: publicError(err, 'An internal server error occurred') });
     }
 };
 
@@ -51,7 +52,7 @@ const createBusinessUser = async (req, res) => {
         const createdUser = await newUser.save();
         return res.status(201).json(createdUser);
     } catch (err) {
-        return res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: publicError(err, 'Invalid request') });
     }
 };
 
@@ -73,7 +74,7 @@ const updateBusinessUser = async (req, res) => {
         const updatedUser = await user.save();
         return res.status(200).json(updatedUser);
     } catch (err) {
-        return res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: publicError(err, 'Invalid request') });
     }
 };
 
@@ -86,7 +87,7 @@ const deleteBusinessUser = async (req, res) => {
         }
         return res.status(200).json({ message: "Business user deleted successfully" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: publicError(err, 'An internal server error occurred') });
     }
 };
 

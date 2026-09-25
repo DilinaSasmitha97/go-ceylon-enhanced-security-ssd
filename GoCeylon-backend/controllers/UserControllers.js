@@ -1,4 +1,5 @@
 const Tourist = require('../models/UserModel'); // Import the correct model
+const { publicError } = require('../utils/errorResponse');
 
 // Get all users (tourists)
 const getAllUsers = async (req, res) => {
@@ -9,7 +10,7 @@ const getAllUsers = async (req, res) => {
         }
         return res.status(200).json(users);
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: publicError(err, 'An internal server error occurred') });
     }
 };
 
@@ -22,7 +23,7 @@ const getUserById = async (req, res) => {
         }
         return res.status(200).json(user);  // Return the user details
     } catch (err) {
-        return res.status(500).json({ message: 'Error fetching user details', error: err.message });
+        return res.status(500).json({ message: 'Error fetching user details', error: publicError(err, 'Error fetching user details') });
     }
 };
 
@@ -52,7 +53,7 @@ const createUser = async (req, res) => {
         const createdUser = await newUser.save();
         return res.status(201).json(createdUser);
     } catch (err) {
-        return res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: publicError(err, 'Invalid request') });
     }
 };
 
@@ -83,7 +84,7 @@ const updateUser = async (req, res) => {
         const updatedUser = await user.save();
         return res.status(200).json(updatedUser);
     } catch (err) {
-        return res.status(400).json({ message: err.message });
+        return res.status(400).json({ message: publicError(err, 'Invalid request') });
     }
 };
 
@@ -96,7 +97,7 @@ const deleteUser = async (req, res) => {
         }
         return res.status(200).json({ message: "User deleted successfully" });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: publicError(err, 'An internal server error occurred') });
     }
 };
 

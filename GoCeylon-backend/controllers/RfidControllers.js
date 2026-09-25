@@ -1,4 +1,5 @@
 const RfidModel = require('../models/RfidModel');
+const { publicError } = require('../utils/errorResponse');
 
 // Create a new RFID entry
 exports.createRfid = async (req, res) => {
@@ -7,7 +8,7 @@ exports.createRfid = async (req, res) => {
         await rfid.save();
         res.status(201).json({ success: true, data: rfid });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        res.status(400).json({ success: false, message: publicError(error, 'Invalid request') });
     }
 };
 
@@ -17,7 +18,7 @@ exports.getAllRfids = async (req, res) => {
         const rfids = await RfidModel.find();
         res.status(200).json({ success: true, data: rfids });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: publicError(error, 'An internal server error occurred') });
     }
 };
 
@@ -30,7 +31,7 @@ exports.getRfidById = async (req, res) => {
         }
         res.status(200).json({ success: true, data: rfid });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: publicError(error, 'An internal server error occurred') });
     }
 };
 
@@ -43,7 +44,7 @@ exports.updateRfid = async (req, res) => {
         }
         res.status(200).json({ success: true, data: rfid });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        res.status(400).json({ success: false, message: publicError(error, 'Invalid request') });
     }
 };
 
@@ -56,6 +57,6 @@ exports.deleteRfid = async (req, res) => {
         }
         res.status(200).json({ success: true, message: 'RFID deleted successfully' });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: publicError(error, 'An internal server error occurred') });
     }
 };

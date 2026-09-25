@@ -1,4 +1,5 @@
 const Guide = require('../models/GuideModel');
+const { publicError } = require('../utils/errorResponse');
 const bcrypt = require('bcrypt'); // For password hashing
 const multer = require('multer'); // For file uploads
 const path = require('path');
@@ -36,7 +37,7 @@ const getAllGuides = async (req, res) => {
         }
         return res.status(200).json({ guides });
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        return res.status(500).json({ message: publicError(err, 'An internal server error occurred') });
     }
 };
 exports.getAllGuides = getAllGuides;
@@ -62,7 +63,7 @@ const getGuidesByLocation = async (req, res) => {
 
         res.status(200).json({ guides });
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching guides by location', error: error.message });
+        res.status(500).json({ message: 'Error fetching guides by location', error: publicError(error, 'Error fetching guides by location') });
     }
 };
 
@@ -78,7 +79,7 @@ const createGuide = async (req, res) => {
         await newGuide.save();
         res.status(201).json(newGuide);
     } catch (error) {
-        res.status(400).json({ message: 'Error creating guide', error: error.message });
+        res.status(400).json({ message: 'Error creating guide', error: publicError(error, 'Error creating guide') });
     }
 };
 exports.createGuide = [upload.single('photo'), createGuide];
@@ -98,7 +99,7 @@ const updateGuide = async (req, res) => {
         if (!updatedGuide) return res.status(404).json({ message: 'Guide not found' });
         res.status(200).json(updatedGuide);
     } catch (error) {
-        res.status(400).json({ message: 'Error updating guide', error: error.message });
+        res.status(400).json({ message: 'Error updating guide', error: publicError(error, 'Error updating guide') });
     }
 };
 exports.updateGuide = [upload.single('photo'), updateGuide];
@@ -110,7 +111,7 @@ const deleteGuide = async (req, res) => {
         if (!deletedGuide) return res.status(404).json({ message: 'Guide not found' });
         res.status(200).json({ message: 'Guide deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting guide', error: error.message });
+        res.status(500).json({ message: 'Error deleting guide', error: publicError(error, 'Error deleting guide') });
     }
 };
 exports.deleteGuide = deleteGuide;
