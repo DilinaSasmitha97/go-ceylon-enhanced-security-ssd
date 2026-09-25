@@ -16,6 +16,7 @@ const chatRoutes = require("./routes/chatRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const businessRouter = require('./routes/BusinessRoutes');
 const businessUserRouter = require('./routes/BusinessUserRoutes');
+const calendarRouter = require("./routes/calendarRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
 
 // Initialize Express App
@@ -88,5 +89,6 @@ app.use("/api/chat", chatRoutes);
 app.use("/admin", adminRoutes);
 app.use("/api/business", businessRouter);
 app.use("/businessuser", businessUserRouter);
+app.use("/api/calendar", calendarRouter);
 
 module.exports = app;
