@@ -3,6 +3,7 @@ import axios from 'axios';
 import { LuUser } from 'react-icons/lu';
 import { LuBriefcaseBusiness } from 'react-icons/lu';
 import { GrLocation } from 'react-icons/gr';
+import { FcGoogle } from 'react-icons/fc';
 import { Link, useNavigate } from 'react-router-dom';
 import API_BASE_URL from "../config/config";
 
@@ -18,6 +19,14 @@ const Login = () => {
   useEffect(() => {
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#ffffff");
   }, []);
+
+  const handleGoogleLogin = () => {
+    // Full-page redirect to the backend. The backend sets the secure OAuth
+    // session cookie (CSRF state + nonce + PKCE verifier) and forwards the
+    // browser to Google's consent screen. We must use a real navigation here,
+    // not axios, so the browser follows the redirect chain and keeps cookies.
+    window.location.href = `${API_BASE_URL}/api/auth/google`;
+  };
 
   const handleUserTypeChange = (type) => {
     setUserType(type);
@@ -113,8 +122,23 @@ const Login = () => {
           </button>
         </form>
 
+        <div className="mt-6 flex items-center gap-3">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="text-xs text-gray-400">OR</span>
+          <div className="flex-1 h-px bg-gray-300" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full mt-4 flex items-center justify-center gap-3 border border-gray-300 bg-white py-3 rounded-lg hover:bg-gray-50 transition duration-300"
+        >
+          <FcGoogle className="text-xl" />
+          <span className="text-sm font-medium text-gray-700">Sign in with Google</span>
+        </button>
+
         <div className="mt-4">
-          <p className="text-center text-gray-500 text-sm">OR <Link to="/register" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
+          <p className="text-center text-gray-500 text-sm">New here? <Link to="/register" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
         </div>
 
       </div>

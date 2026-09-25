@@ -11,6 +11,7 @@ import BookingInfo from './pages/traveler/BookingInfo';
 import BookingList from './pages/traveler/BookingList';
 import BookingHistory from './pages/traveler/BookingHistory'
 import Login from './pages/Login';
+import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/dashboard/Dashboard';
 import AiGuide from './pages/traveler/AiGuide';
 import NewRFID from './pages/dashboard/NewRFID';
@@ -51,6 +52,7 @@ export default function App() {
         <Routes>
 
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register2" element={<GuideRegister />} />
           <Route path="/register3" element={<BusinessmanRegister />} />
