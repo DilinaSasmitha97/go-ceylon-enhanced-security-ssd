@@ -12,6 +12,7 @@ import BookingList from './pages/traveler/BookingList';
 import BookingHistory from './pages/traveler/BookingHistory'
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
+import CalendarBookings from './pages/traveler/CalendarBookings';
 import Dashboard from './pages/dashboard/Dashboard';
 import AiGuide from './pages/traveler/AiGuide';
 import NewRFID from './pages/dashboard/NewRFID';
@@ -67,6 +68,7 @@ export default function App() {
           <Route path='/user/scaner' element={<PrivateRoute element={<Scanner />} allowedUserType="tourist" />} />
           <Route path='/user/guide' element={<PrivateRoute element={<AiGuide />} allowedUserType="tourist" />} />
           <Route path='/user/guide/point' element={<PrivateRoute element={<PointGuide />} allowedUserType="tourist" />} />
+          <Route path='/user/calendar-bookings' element={<PrivateRoute element={<CalendarBookings />} allowedUserType="tourist" />} />
 
 
           <Route path="/admin/dashboard" element={<PrivateRoute element={<Dashboard />} allowedUserType="admin" />} />
