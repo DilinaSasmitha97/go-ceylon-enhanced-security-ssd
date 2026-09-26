@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useRef } from "react"
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
+import DOMPurify from "dompurify"
 import API_BASE_URL from "../../config/config"
 import {
   ArrowLeft,
@@ -38,6 +39,17 @@ const AttractionDetails = () => {
   const [attraction, setAttraction] = useState({})
   const [selectedImage, setSelectedImage] = useState(null)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const sanitizedDescription = useMemo(
+    () => DOMPurify.sanitize(attraction.description || "No description available.", {
+      ALLOWED_TAGS: [
+        "p", "br", "strong", "em", "u", "s",
+        "h1", "h2", "h3", "ol", "ul", "li",
+        "blockquote", "pre", "code", "a",
+      ],
+      ALLOWED_ATTR: ["href", "title", "target", "rel"],
+    }),
+    [attraction.description],
+  )
   const [weather, setWeather] = useState(null)
   const [showLightbox, setShowLightbox] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -504,7 +516,7 @@ const AttractionDetails = () => {
                 <h2 className="text-xl font-bold text-gray-800 mb-3">Description</h2>
                 <div
                   className="text-gray-700 text-base leading-relaxed prose max-w-none"
-                  dangerouslySetInnerHTML={{ __html: attraction.description || "No description available." }}
+                  dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
                 ></div>
               </div>
 
