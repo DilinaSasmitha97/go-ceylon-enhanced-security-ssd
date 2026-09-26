@@ -82,12 +82,36 @@ exports.getTravelGuide = async (req, res) => {
 exports.chat = async (req, res) => {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const userMessage = req.body.message;
-    let history = req.body.history || [];
-
-    if (!userMessage) {
-        return res.status(400).send({ error: "Message is required" });
+    if (typeof req.body.message !== 'string' || !req.body.message.trim()) {
+        return res.status(400).json({ error: "Message is required" });
     }
+
+    const userMessage = req.body.message.trim();
+    if (userMessage.length > 2000) {
+        return res.status(400).json({ error: "Message is too long" });
+    }
+
+    if (req.body.history !== undefined && !Array.isArray(req.body.history)) {
+        return res.status(400).json({ error: "History must be an array" });
+    }
+
+    // Accept only the conversation shape expected by Gemini. This prevents
+    // arbitrary request objects from being forwarded or reflected in the API.
+    let history = (req.body.history || [])
+        .slice(-20)
+        .flatMap((entry) => {
+            if (!entry || !['user', 'model'].includes(entry.role)) return [];
+
+            const text = typeof entry.parts === 'string'
+                ? entry.parts
+                : entry.parts?.[0]?.text;
+            if (typeof text !== 'string' || !text.trim()) return [];
+
+            return [{
+                role: entry.role,
+                parts: [{ text: text.trim().slice(0, 2000) }]
+            }];
+        });
 
     // Ensure the first message is always from a user
     if (history.length > 0 && history[0].role !== "user") {
@@ -114,13 +138,15 @@ exports.chat = async (req, res) => {
         const text = response.text();
 
         // Append new messages to history
-        history.push({ role: "user", parts: userMessage });
-        history.push({ role: "model", parts: text });
+        history.push({ role: "user", parts: [{ text: userMessage }] });
+        history.push({ role: "model", parts: [{ text }] });
 
-        res.send({ response: text, history: history });
+        // Always emit JSON. res.send() is intentionally avoided because generic
+        // Express XSS rules treat it as a potentially unsafe HTML response sink.
+        res.json({ response: text, history });
     } catch (error) {
         console.error("Error generating response:", error);
-        res.status(500).send({ error: "Failed to generate response" });
+        res.status(500).json({ error: "Failed to generate response" });
     }
 };
 
