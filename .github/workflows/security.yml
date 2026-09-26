@@ -27,7 +27,7 @@ jobs:
     name: Secrets scan (Gitleaks)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     container: semgrep/semgrep:1.178.0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Registry rule packs plus project rules in .semgrep/. node_password and
       # node_username are excluded: in this code base they only match form
@@ -142,7 +142,7 @@ jobs:
       run:
         working-directory: ${{ matrix.app }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v4
         with:
@@ -169,7 +169,7 @@ jobs:
       run:
         working-directory: GoCeylon-backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v4
         with:
@@ -198,7 +198,7 @@ jobs:
         ports:
           - 27017:27017
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v4
         with:
