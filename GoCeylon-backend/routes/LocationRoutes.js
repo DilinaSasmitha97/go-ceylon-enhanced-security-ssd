@@ -8,7 +8,8 @@ const { imageArray, uploadRateLimit } = require('../middleware/imageUploadMiddle
 router.post("/", authMiddleware(['admin']), uploadRateLimit, ...imageArray("images", 5), locationController.createLocation);
 
 // Routes
-router.get('/report', locationController.getAttractionReport); ``
+router.get('/report', locationController.getAttractionReport);
+router.get('/weather', locationController.getWeather);
 router.get('/', locationController.getAllLocations);
 router.get('/:id', locationController.getLocationById);
 
