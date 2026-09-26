@@ -1,22 +1,4 @@
 const Business = require('../models/BusinessModel');
-const multer = require('multer');
-const path = require('path');
-
-// Set up storage for uploaded files
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Ensure 'uploads' folder exists
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-// Multer configuration
-const upload = multer({ storage: storage }).fields([
-    { name: 'ownerPhoto', maxCount: 1 },
-    { name: 'images', maxCount: 5 }
-]);
 
 // Create Business
 const createBusiness = async (req, res) => {
@@ -24,11 +6,10 @@ const createBusiness = async (req, res) => {
         console.log("Request body:", req.body); // Debugging log
         console.log("Files uploaded:", req.files); // Debugging log
 
-        const { user_id, business_name, business_category, contact_number, address, description, openingHours } = req.body;
-
-        if (!user_id) {
-            return res.status(400).json({ error: "User ID is required" });
-        }
+        const { business_name, business_category, contact_number, address, description, openingHours } = req.body;
+        const user_id = req.user.userType === 'admin'
+            ? (req.body.user_id || req.body.business_user || req.user.id)
+            : req.user.id;
 
         const ownerPhoto = req.files?.ownerPhoto ? req.files.ownerPhoto[0].path : "";
         const images = req.files?.images ? req.files.images.map(file => file.path) : [];
@@ -102,4 +83,4 @@ const deleteBusiness = async (req, res) => {
     }
 };
 
-module.exports = { upload, createBusiness, getAllBusinesses, getBusinessById, updateBusiness, deleteBusiness };
+module.exports = { createBusiness, getAllBusinesses, getBusinessById, updateBusiness, deleteBusiness };

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Booking = require('../models/BookingModel');
+const Business = require('../models/BusinessModel');
 
 // Object-level authorization (VULN-03). Must run after authMiddleware, which sets req.user.
 
@@ -43,4 +44,26 @@ const requireBookingAccess = (paramName, { allowGuide = true } = {}) => async (r
     }
 };
 
-module.exports = { requireSelfOrAdmin, requireBookingAccess };
+const requireBusinessOwnerOrAdmin = (paramName) => async (req, res, next) => {
+    if (isAdmin(req.user)) return next();
+
+    const businessId = req.params[paramName];
+    if (!mongoose.Types.ObjectId.isValid(businessId)) {
+        return res.status(404).json({ message: "Business not found" });
+    }
+
+    try {
+        const business = await Business.findById(businessId).select('business_user');
+        if (!business) return res.status(404).json({ message: "Business not found" });
+
+        if (String(business.business_user) !== String(req.user.id)) {
+            return res.status(403).json({ message: "Forbidden. You do not own this business." });
+        }
+        next();
+    } catch (error) {
+        console.error("Business access check failed:", error);
+        return res.status(500).json({ message: "Error checking business access" });
+    }
+};
+
+module.exports = { requireSelfOrAdmin, requireBookingAccess, requireBusinessOwnerOrAdmin };

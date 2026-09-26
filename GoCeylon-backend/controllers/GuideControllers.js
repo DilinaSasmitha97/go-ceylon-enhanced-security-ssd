@@ -1,32 +1,7 @@
 const Guide = require('../models/GuideModel');
 const { publicError } = require('../utils/errorResponse');
 const bcrypt = require('bcrypt'); // For password hashing
-const multer = require('multer'); // For file uploads
-const path = require('path');
 const mongoose = require('mongoose');
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Directory to store uploaded files
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
-const upload = multer({
-    storage,
-    fileFilter: (req, file, cb) => {
-        const fileTypes = /jpeg|jpg|png/;
-        const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = fileTypes.test(file.mimetype);
-        if (extname && mimetype) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only images are allowed (jpeg, jpg, png)'));
-        }
-    }
-});
 
 // Read
 const getAllGuides = async (req, res) => {
@@ -82,7 +57,7 @@ const createGuide = async (req, res) => {
         res.status(400).json({ message: 'Error creating guide', error: publicError(error, 'Error creating guide') });
     }
 };
-exports.createGuide = [upload.single('photo'), createGuide];
+exports.createGuide = createGuide;
 
 // Update a Guide
 const updateGuide = async (req, res) => {
@@ -102,7 +77,7 @@ const updateGuide = async (req, res) => {
         res.status(400).json({ message: 'Error updating guide', error: publicError(error, 'Error updating guide') });
     }
 };
-exports.updateGuide = [upload.single('photo'), updateGuide];
+exports.updateGuide = updateGuide;
 
 // Delete a guide
 const deleteGuide = async (req, res) => {

@@ -851,7 +851,7 @@ export default function RegistrationForm() {
                                                 } rounded-lg py-3.5 pl-11 pr-4 leading-tight focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent transition-colors`}
                                             type="file"
                                             id="photo"
-                                            accept="image/*"
+                                            accept="image/jpeg,image/png,image/webp"
                                             name="photo"
                                             onChange={handleChange}
                                         />

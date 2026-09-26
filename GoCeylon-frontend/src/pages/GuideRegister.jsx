@@ -114,7 +114,7 @@ const GuideRegistrationForm = () => {
 
         <input type="text" name="contact_number" placeholder="Contact Number" value={formData.contact_number} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
 
-        <input type="file" name="photo" accept="image/*" onChange={handleChange} className="w-full" />
+        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" onChange={handleChange} className="w-full" />
 
         <button type="submit" className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition">
           Register
