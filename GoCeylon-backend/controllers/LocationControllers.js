@@ -166,10 +166,33 @@ const getAttractionReport = async (req, res) => {
     }
 };
 
+const getWeather = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || typeof q !== 'string') {
+            return res.status(400).json({ message: 'Location query parameter "q" is required' });
+        }
 
+        const apiKey = process.env.WEATHER_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({ message: 'Weather service is not configured' });
+        }
 
+        const encodedLocation = encodeURIComponent(q.trim());
+        const weatherApiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodedLocation}&aqi=no`;
 
+        const response = await fetch(weatherApiUrl);
+        if (!response.ok) {
+            return res.status(response.status).json({ message: 'Failed to fetch weather data' });
+        }
 
+        const data = await response.json();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Error in getWeather:', error.message);
+        res.status(500).json({ message: 'Error fetching weather data' });
+    }
+};
 
 module.exports = {
     getAllLocations,
@@ -177,5 +200,6 @@ module.exports = {
     deleteLocation,
     updateLocation,
     getLocationById,
-    getAttractionReport
+    getAttractionReport,
+    getWeather
 };

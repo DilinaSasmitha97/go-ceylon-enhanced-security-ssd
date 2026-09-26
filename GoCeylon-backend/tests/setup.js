@@ -2,6 +2,7 @@
 process.env.JWT_SECRET = 'test-jwt-secret';
 process.env.DOTENV_CONFIG_QUIET = 'true';
 process.env.COOKIE_SECRET = 'test-cookie-secret';
+process.env.WEATHER_API_KEY = 'test-weather-key';
 process.env.NODE_ENV = 'test';
 
 const mongoose = require('mongoose');

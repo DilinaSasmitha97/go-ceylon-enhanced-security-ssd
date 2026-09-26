@@ -69,9 +69,6 @@ const AttractionDetails = () => {
   const headerRef = useRef(null)
   const contentRef = useRef(null)
 
-  // WeatherAPI.com API key
-  const WEATHER_API_KEY = "1ceadd56b96742dc9cf193920252804"
-
   // Sample businesses data
   const SAMPLE_BUSINESSES = [
     {
@@ -213,7 +210,7 @@ const AttractionDetails = () => {
     try {
       const encodedLocation = encodeURIComponent(locationName)
       const response = await axios.get(
-        `https://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodedLocation}&aqi=no`,
+        `${API_BASE_URL}/location/weather?q=${encodedLocation}`,
       )
 
       setWeather(response.data)
