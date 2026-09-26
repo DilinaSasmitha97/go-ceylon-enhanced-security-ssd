@@ -1,6 +1,7 @@
 const Location = require('../models/LocationModel');
 const fs = require('fs');
 const path = require('path');
+const sanitizeRichText = require('../utils/sanitizeRichText');
 
 const getAllLocations = async (req, res) => {
     try {
@@ -8,7 +9,12 @@ const getAllLocations = async (req, res) => {
         const query = tag ? { tags: tag } : {};
         const locations = await Location.find(query);
 
-        res.status(200).json({ locations });
+        const safeLocations = locations.map((location) => ({
+            ...location.toObject(),
+            description: sanitizeRichText(location.description)
+        }));
+
+        res.status(200).json({ locations: safeLocations });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error fetching locations' });
@@ -24,7 +30,10 @@ const getLocationById = async (req, res) => {
             return res.status(404).json({ message: 'Location not found' });
         }
 
-        res.status(200).json(location);
+        res.status(200).json({
+            ...location.toObject(),
+            description: sanitizeRichText(location.description)
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error fetching location' });
@@ -33,7 +42,8 @@ const getLocationById = async (req, res) => {
 
 const createLocation = async (req, res) => {
     try {
-        const { name, description, google_map_url } = req.body;
+        const { name, google_map_url } = req.body;
+        const description = sanitizeRichText(req.body.description);
 
         // Ensure tags and points are properly parsed
         const tags = req.body.tags ? JSON.parse(req.body.tags) : [];
@@ -107,7 +117,7 @@ const updateLocation = async (req, res) => {
         // Manually process the form data to extract the necessary fields
         let updatedData = {
             name: req.body.name,
-            description: req.body.description,
+            description: sanitizeRichText(req.body.description),
             google_map_url: req.body.google_map_url,
             tags: JSON.parse(req.body.tags), // Assuming tags were stringified in the frontend
             points: JSON.parse(req.body.points), // Assuming points were stringified in the frontend
