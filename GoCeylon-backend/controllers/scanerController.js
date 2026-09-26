@@ -9,12 +9,16 @@ exports.addRFID = async (req, res) => {
         const { rfidTagCode, scanLocation, transactionAmount } = req.body;
 
         // Validate required fields
-        if (!rfidTagCode) return res.status(400).json({ error: "RFID Tag Code is required!" });
+        // VULN-05 (NoSQL Injection) fix: require a plain string, not just a truthy
+        // value. The old `!rfidTagCode` check let an operator object such as
+        // { "$ne": null } through, which would match an arbitrary wallet in the
+        // findOne below and allow deducting its balance.
+        if (typeof rfidTagCode !== 'string') return res.status(400).json({ error: "RFID Tag Code is required!" });
         if (!scanLocation) return res.status(400).json({ error: "Scan Location is required!" });
         if (transactionAmount === undefined) return res.status(400).json({ error: "Transaction Amount is required!" });
 
         // Check if the RFID Tag Code exists in RfidModel
-        const existingRfid = await RfidModel.findOne({ rfidTagCode });
+        const existingRfid = await RfidModel.findOne({ rfidTagCode }); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection -- rfidTagCode is guarded as a string above
 
         if (!existingRfid) {
             return res.status(404).json({ error: "RFID Tag Code not found in RfidModel!" });
