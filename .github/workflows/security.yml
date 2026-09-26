@@ -236,3 +236,4 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           artifact_name: zap-baseline-report
+          # The ZAP baseline scan is a quick scan that looks for common vulnerabilities. It is not a full penetration test, but it can catch some issues early in the development cycle.
