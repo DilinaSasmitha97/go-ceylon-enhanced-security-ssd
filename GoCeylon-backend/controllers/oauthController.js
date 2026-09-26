@@ -133,7 +133,11 @@ exports.handleGoogleCallback = async (req, res) => {
         }
 
         // 6. Find or Create Tourist Account in MongoDB
-        let user = await Tourist.findOne({ email: payload.email });
+        // VULN-05 note: this is a FALSE POSITIVE for NoSQL injection. `payload` is
+        // the output of oauth2Client.verifyIdToken(), so payload.email is a string
+        // taken from a cryptographically verified Google ID token, not from user
+        // input. An attacker cannot place a MongoDB operator object here.
+        let user = await Tourist.findOne({ email: payload.email }); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
         if (!user) {
             // New user: register as Tourist automatically
             user = new Tourist({

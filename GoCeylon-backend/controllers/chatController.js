@@ -132,7 +132,10 @@ exports.getPointText = async (req, res) => {
 
     try {
         // Find the location by attractionId
-        const location = await Location.findOne({ 'points.point': pointId, '_id': attractionId });
+        // VULN-05 note: FALSE POSITIVE for NoSQL injection. attractionId and pointId
+        // come from req.params (URL path segments), which Express always exposes as
+        // strings, so a MongoDB operator object cannot be injected here.
+        const location = await Location.findOne({ 'points.point': pointId, '_id': attractionId }); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
 
         // If location is not found
         if (!location) {
@@ -247,7 +250,10 @@ exports.getPointText = async (req, res) => {
 
     try {
         // Find the location by attractionId
-        const location = await Location.findOne({ 'points.point': pointId, '_id': attractionId });
+        // VULN-05 note: FALSE POSITIVE for NoSQL injection. attractionId and pointId
+        // come from req.params (URL path segments), which Express always exposes as
+        // strings, so a MongoDB operator object cannot be injected here.
+        const location = await Location.findOne({ 'points.point': pointId, '_id': attractionId }); // nosemgrep: ajinabraham.njsscan.database.nosql_find_injection.node_nosqli_injection
 
         // If location is not found
         if (!location) {
