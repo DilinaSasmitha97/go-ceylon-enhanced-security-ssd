@@ -46,7 +46,12 @@ app.use((req, res, next) => {
 // Serve static files from the "uploads" directory. The frontend runs on another
 // origin and shows these images, so they may be loaded cross-origin.
 app.use('/uploads', (req, res, next) => {
+    const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+    if (!allowedExtensions.has(path.extname(req.path).toLowerCase())) {
+        return res.status(404).json({ message: 'File not found' });
+    }
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
     next();
 }, express.static(path.join(__dirname, 'uploads')));
 

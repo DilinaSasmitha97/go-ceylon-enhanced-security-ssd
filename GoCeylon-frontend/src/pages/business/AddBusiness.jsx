@@ -145,6 +145,9 @@ export default function AddBusiness() {
         try {
             const response = await fetch(`${API_BASE_URL}/api/business/create`, {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
                 body: formDataToSend,
             })
 
@@ -408,6 +411,7 @@ export default function AddBusiness() {
                                     <input
                                         type="file"
                                         name="images"
+                                        accept="image/jpeg,image/png,image/webp"
                                         onChange={handleFileChange}
                                         multiple
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"

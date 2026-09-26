@@ -506,7 +506,7 @@ const UpdateAttractionForm = () => {
                                             type="file"
                                             id="images"
                                             multiple
-                                            accept="image/*"
+                                            accept="image/jpeg,image/png,image/webp"
                                             onChange={handleImageChange}
                                             className="hidden"
                                         />

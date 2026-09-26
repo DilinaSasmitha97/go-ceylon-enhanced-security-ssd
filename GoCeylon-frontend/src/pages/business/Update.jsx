@@ -22,6 +22,7 @@ const CATEGORY_OPTIONS = [
 export default function UpdateBusiness() {
     const { businessId } = useParams()
     const navigate = useNavigate()
+    const token = localStorage.getItem("authToken")
     const [formData, setFormData] = useState({
         business_name: "",
         business_category: "",
@@ -181,7 +182,9 @@ export default function UpdateBusiness() {
                     formDataToSend.append("images", image)
                 })
 
-                const response = await axios.put(`${API_BASE_URL}/api/business/${businessId}`, formDataToSend)
+                const response = await axios.put(`${API_BASE_URL}/api/business/${businessId}`, formDataToSend, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
 
                 if (response.status === 200) {
                     setSuccessMessage("Business updated successfully!")
@@ -196,6 +199,7 @@ export default function UpdateBusiness() {
                 const response = await axios.put(`${API_BASE_URL}/api/business/${businessId}`, jsonData, {
                     headers: {
                         "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
                     },
                 })
 
@@ -452,6 +456,7 @@ export default function UpdateBusiness() {
                                     <input
                                         type="file"
                                         name="images"
+                                        accept="image/jpeg,image/png,image/webp"
                                         onChange={handleFileChange}
                                         multiple
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
