@@ -52,10 +52,10 @@ exports.downloadReceipt = async (req, res) => {
 // Get all bookings
 exports.getAllBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find();
-        if (!bookings || bookings.length === 0) {
-            return res.status(404).json({ message: "No bookings found" });
-        }
+        const bookings = await Booking.find()
+            .populate('b_user', 'name')
+            .populate('b_guide', 'g_name')
+            .sort({ createdAt: -1 });
         return res.status(200).json({ bookings });
     } catch (err) {
         res.status(500).json({ message: err.message });

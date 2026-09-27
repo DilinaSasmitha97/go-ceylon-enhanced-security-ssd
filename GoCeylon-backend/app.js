@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require('path');
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
@@ -13,6 +14,7 @@ const rfidRouter = require("./routes/RfidRoutes");
 const scanerRouter = require("./routes/scanerRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 const businessRouter = require('./routes/BusinessRoutes');
 const businessUserRouter = require('./routes/BusinessUserRoutes');
 const authMiddleware = require("./middleware/authMiddleware");
@@ -40,17 +42,20 @@ app.use("/rfid", rfidRouter);
 app.use("/api/scaner", scanerRouter);
 app.use("/api/chat", chatRoutes);
 app.use("/admin", adminRoutes);
+app.use("/report", reportRoutes);
 app.use("/api/business", businessRouter);
 app.use("/businessuser", businessUserRouter);
 
 // MongoDB Connection
-const mongoURI = "mongodb+srv://admin:JbkMQtmZEYD8gTrP@cluster0.doxbw.mongodb.net/";
+const mongoURI = process.env.MONGO_URI;
+
+if (!mongoURI) {
+    console.error("Missing MONGO_URI in GoCeylon-backend/.env");
+    process.exit(1);
+}
 
 mongoose
-    .connect(mongoURI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+    .connect(mongoURI)
     .then(() => {
         console.log("Connected to MongoDB");
 
@@ -67,7 +72,7 @@ mongoose
 
 // Handle MongoDB Disconnects
 mongoose.connection.on("disconnected", () => {
-    console.error("MongoDB disconnected! Retrying...");
+    console.error("MongoDB disconnected");
 });
 
 // Global Error Handling

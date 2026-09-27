@@ -62,7 +62,7 @@ export default function Dashboard() {
                 const bookingsResponse = await axios.get(`${API_BASE_URL}/booking`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
-                setBookings(bookingsResponse.data)
+                setBookings(bookingsResponse.data.bookings || [])
 
                 setLoading(false)
             } catch (err) {
@@ -356,17 +356,17 @@ export default function Dashboard() {
                                             {recentBookings.map((booking) => (
                                                 <tr key={booking._id} className="hover:bg-gray-50">
                                                     <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-700">
-                                                        {booking.userId?.name || "N/A"}
+                                                        {booking.b_user?.name || "N/A"}
                                                     </td>
                                                     <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-700">
-                                                        {booking.guideId?.g_name || "N/A"}
+                                                        {booking.b_guide?.g_name || "N/A"}
                                                     </td>
                                                     <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-700">
                                                         {formatDate(booking.createdAt)}
                                                     </td>
                                                     <td className="px-3 py-3 whitespace-nowrap">
-                                                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(booking.bookingStatus)}`}>
-                                                            {booking.bookingStatus.charAt(0).toUpperCase() + booking.bookingStatus.slice(1)}
+                                                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(booking.status)}`}>
+                                                            {(booking.status || "pending").charAt(0).toUpperCase() + (booking.status || "pending").slice(1)}
                                                         </span>
                                                     </td>
                                                 </tr>
