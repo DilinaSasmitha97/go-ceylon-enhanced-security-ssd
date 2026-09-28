@@ -26,7 +26,7 @@
   - Monorepo: [https://github.com/DilinaSasmitha97/go-ceylon-enhanced-security-ssd.git](https://github.com/DilinaSasmitha97/go-ceylon-enhanced-security-ssd.git)
   - Active Hardened Branch: `main`
 - **Video Demonstration Link (YouTube):**
-  - [https://youtu.be/PLACEHOLDER_DEMO_LINK](https://youtu.be/PLACEHOLDER_DEMO_LINK) *(Maximum 20 minutes — Walkthrough of all 8 remediated vulnerabilities, proof-of-concept exploits, dual-layer defenses, and Google OAuth 2.0 / OIDC & Google Calendar feature demonstrations)*
+  - [https://youtu.be/g6JWj29NZmY](https://youtu.be/g6JWj29NZmY) *(Maximum 20 minutes — Walkthrough of all 8 remediated vulnerabilities, proof-of-concept exploits, dual-layer defenses, and Google OAuth 2.0 / OIDC & Google Calendar feature demonstrations)*
 - **Formal Technical Report:**
   - Included as `reports/SE4030_GoCeylon_Security_Report.pdf` within the submission archive.
 

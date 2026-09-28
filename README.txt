@@ -51,7 +51,7 @@ Modified Project Repository (Enhanced Security Version):
 
 3. YOUTUBE VIDEO DEMONSTRATION LINK
 --------------------------------------------------------------------------------
-Link: https://youtu.be/PLACEHOLDER_DEMO_LINK
+Link: https://youtu.be/g6JWj29NZmY
 (Maximum 20 minutes: Detailed walkthrough explaining the 8 remediated vulnerabilities, proof-of-concept exploits, dual-layer defensive implementations, and the Google OAuth 2.0 / OpenID Connect + Google Calendar integration)
 
 
