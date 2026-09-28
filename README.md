@@ -9,12 +9,12 @@
 ## 1. Deliverables & Project Metadata
 
 ### 1.1 Group Members & Identification
-| Member Full Name | Student ID (Index No.) | Assigned Security Lead Roles & Technical Focus Areas |
-| :--- | :---: | :--- |
-| **A. W. Dilina Sasmitha** | **IT23143418** | **Authentication Architecture, Cryptographic Hardening & OAuth 2.0 / OIDC Backend Lead**<br>• VULN-01 (Hardcoded Secrets & Credential Isolation)<br>• VULN-02 (Unauthenticated Administrative Account Registration)<br>• Google OAuth 2.0 / OIDC Backend Engine with PKCE & One-Time Code Exchange<br>• Server-Side Weather API Proxy Architecture (`GET /location/weather`) |
-| **Dewmini Navodya Gamage** | **IT23144330** | **Login Security, Anti-Brute-Force Rate Limiting & Calendar Integration Lead**<br>• VULN-05 (NoSQL Query Injection & User Enumeration Prevention)<br>• VULN-06 (Authentication Brute-Force & Credential Stuffing Mitigation)<br>• Google OAuth 2.0 Frontend Client Integration ("Sign in with Google")<br>• Google Calendar Itinerary Synchronization (Incremental Authorization) |
-| **R. A. Bosilu Jinajith** | **IT22566898** | **Content Security, Media Upload Pipeline & Attack Chain Modeling Lead**<br>• VULN-04 (Stored Cross-Site Scripting in Attraction Descriptions)<br>• VULN-07 (Unrestricted File Upload & Media Storage Vulnerabilities)<br>• Multer RAM Buffering & Sharp Magic-Byte Binary Image Transcoding<br>• End-to-End Stored XSS-to-Passport Exfiltration Attack Chain Modeling |
-| **Vonara Wijethunge** | **IT23256750** | **Access Control, Security Headers, DevSecOps CI/CD Pipeline & Test Lead**<br>• VULN-03 (Insecure Direct Object References / Broken Object Authorization)<br>• VULN-08 (Security Misconfiguration, Security Headers & Clickjacking Prevention)<br>• Bonus Hardening A10 (Centralized Exception Handling & Stack Trace Shielding)<br>• Bonus Hardening A03 (Vulnerable Dependency Remediation & Dependabot)<br>• DevSecOps GitHub Actions Security Pipeline & 45+ Jest Regression Test Suite |
+| Member Full Name | Student ID & Email | Contact | Assigned Security Lead Roles & Technical Focus Areas |
+| :--- | :---: | :---: | :--- |
+| **A. W. Dilina Sasmitha**<br>*(Sasmitha A. W. D.)* | **IT23143418**<br>`it23143418@my.sliit.lk` | 0760817797 | **Authentication Architecture, Cryptographic Hardening & OAuth 2.0 / OIDC Backend Lead**<br>• VULN-01 (Hardcoded Secrets & Credential Isolation)<br>• VULN-02 (Unauthenticated Administrative Account Registration)<br>• Google OAuth 2.0 / OIDC Backend Engine with PKCE & One-Time Code Exchange<br>• Server-Side Weather API Proxy Architecture (`GET /location/weather`) |
+| **P. G. Dewmini Navodya**<br>*(Navodya P. G. D.)* | **IT23144330**<br>`it23144330@my.sliit.lk` | 0756451400 | **Login Security, Anti-Brute-Force Rate Limiting & Calendar Integration Lead**<br>• VULN-05 (NoSQL Query Injection & User Enumeration Prevention)<br>• VULN-06 (Authentication Brute-Force & Credential Stuffing Mitigation)<br>• Google OAuth 2.0 Frontend Client Integration ("Sign in with Google")<br>• Google Calendar Itinerary Synchronization (Incremental Authorization) |
+| **R. A. Bosilu Jinajith**<br>*(Jinajith R. A. B.)* | **IT23212268**<br>`it23212268@my.sliit.lk` | 0762250479 | **Content Security, Media Upload Pipeline & Attack Chain Modeling Lead**<br>• VULN-04 (Stored Cross-Site Scripting in Attraction Descriptions)<br>• VULN-07 (Unrestricted File Upload & Media Storage Vulnerabilities)<br>• Multer RAM Buffering & Sharp Magic-Byte Binary Image Transcoding<br>• End-to-End Stored XSS-to-Passport Exfiltration Attack Chain Modeling |
+| **W. M. Vonara Wijethunge**<br>*(Wijethunge W. M. V.)* | **IT23256750**<br>`it23256750@my.sliit.lk` | 0775671404 | **Access Control, Security Headers, DevSecOps CI/CD Pipeline & Test Lead**<br>• VULN-03 (Insecure Direct Object References / Broken Object Authorization)<br>• VULN-08 (Security Misconfiguration, Security Headers & Clickjacking Prevention)<br>• Bonus Hardening A10 (Centralized Exception Handling & Stack Trace Shielding)<br>• Bonus Hardening A03 (Vulnerable Dependency Remediation & Dependabot)<br>• DevSecOps GitHub Actions Security Pipeline & 45+ Jest Regression Test Suite |
 
 ---
 
@@ -216,7 +216,7 @@ Every group member's direct code contributions are verifiable via merged pull re
   - `7921cbc` & `10596a2` — Semgrep rule optimizations and false-positive suppression with justification
   - `2750e58`, `18ccd20`, `909f772`, `eba19de`, `2e9b96f`, `c9155e4` — Merged Pull Requests #21, #22, #23, #24, #29, #30
 
-### 6.3 R. A. Bosilu Jinajith (IT22566898)
+### 6.3 R. A. Bosilu Jinajith (IT23212268)
 - **Role:** Content Security (Stored XSS), Media Upload Security & Attack Chain Threat Modeling Lead
 - **Key Commits on `main`:**
   - `ef2cffc` — `fix: prevent stored XSS in attraction descriptions` (Engineered `sanitizeRichText.js` with `sanitize-html` and client-side DOMPurify)
@@ -354,5 +354,5 @@ We hereby certify that the security auditing, vulnerability remediation, identit
 
 - **A. W. Dilina Sasmitha** (IT23143418)
 - **Dewmini Navodya Gamage** (IT23144330)
-- **R. A. Bosilu Jinajith** (IT22566898)
+- **R. A. Bosilu Jinajith** (IT23212268)
 - **Vonara Wijethunge** (IT23256750)

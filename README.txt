@@ -7,23 +7,31 @@ Marks Allocated: 25 | Group Size: 4
 
 1. GROUP MEMBERS AND INDEX NUMBERS
 --------------------------------------------------------------------------------
-1. A. W. Dilina Sasmitha
+1. A. W. Dilina Sasmitha (Sasmitha A. W. D.)
    Student ID / Index No: IT23143418
+   SLIIT Email: it23143418@my.sliit.lk | Personal: dilinasasmitha18@gmail.com
+   Contact: 0760817797
    Role: Authentication Architecture, Cryptographic Key Management & Google OAuth 2.0 / OIDC Backend Lead
    Contributions: VULN-01 (Secrets Isolation), VULN-02 (Admin Registration RBAC), Google OAuth 2.0 PKCE Backend Engine, Server-Side Weather Proxy
 
-2. Dewmini Navodya Gamage
+2. P. G. Dewmini Navodya (Navodya P. G. D.)
    Student ID / Index No: IT23144330
+   SLIIT Email: it23144330@my.sliit.lk | Personal: dewminigamage22@gmail.com
+   Contact: 0756451400
    Role: Login Security, Anti-Brute-Force Rate Limiting & Calendar Integration Lead
    Contributions: VULN-05 (NoSQL Injection & Enumeration), VULN-06 (Login Rate Limiting), Google OAuth Frontend Integration, Google Calendar Itinerary Synchronization
 
-3. R. A. Bosilu Jinajith
-   Student ID / Index No: IT22566898
+3. R. A. Bosilu Jinajith (Jinajith R. A. B.)
+   Student ID / Index No: IT23212268
+   SLIIT Email: it23212268@my.sliit.lk | Personal: rabjinajith@gmail.com
+   Contact: 0762250479
    Role: Content Security (Stored XSS), Media Upload Security & Attack Chain Threat Modeling Lead
    Contributions: VULN-04 (Stored XSS in Descriptions), VULN-07 (Unrestricted File Uploads), Multer RAM Buffering & Sharp Transcoding, End-to-End Attack Chain Modeling
 
-4. Vonara Wijethunge
+4. W. M. Vonara Wijethunge (Wijethunge W. M. V.)
    Student ID / Index No: IT23256750
+   SLIIT Email: it23256750@my.sliit.lk | Personal: vonarawijethunge@gmail.com
+   Contact: 0775671404
    Role: Object-Level Access Control (IDOR), Security Headers, DevSecOps CI/CD Pipeline & Test Lead
    Contributions: VULN-03 (IDOR Ownership Controls), VULN-08 (Security Headers & CORS), Bonus A10 (Centralized Error Handling), Bonus A03 (Dependency Hardening & Dependabot), DevSecOps CI/CD Pipeline & Jest Regression Suite
 
@@ -69,7 +77,7 @@ Link: https://youtu.be/PLACEHOLDER_DEMO_LINK
 4. VULN-04: Stored Cross-Site Scripting (XSS) in Attraction Descriptions
    - OWASP: A03:2021-Injection | CWE-79
    - CVSS: 7.6 (High) -> 0.0 (Remediated)
-   - Owner: R. A. Bosilu Jinajith (IT22566898)
+   - Owner: R. A. Bosilu Jinajith (IT23212268)
    - Fix: Dual-layer sanitization with sanitize-html on server-side persistence and DOMPurify on client-side rendering.
 
 5. VULN-05: NoSQL Query Injection & User Account Enumeration
@@ -87,7 +95,7 @@ Link: https://youtu.be/PLACEHOLDER_DEMO_LINK
 7. VULN-07: Unrestricted File Upload & Media Storage Vulnerabilities
    - OWASP: A04:2021-Insecure Design | CWE-434
    - CVSS: 9.1 (Critical) -> 0.0 (Remediated)
-   - Owner: R. A. Bosilu Jinajith (IT22566898)
+   - Owner: R. A. Bosilu Jinajith (IT23212268)
    - Fix: Multer in-memory buffering, Sharp binary magic-byte decoding and WebP/JPEG re-encoding, direct Cloudinary streaming, and strict file constraints.
 
 8. VULN-08: Security Misconfiguration, Insecure CORS & Missing Security Headers
@@ -133,7 +141,7 @@ Dewmini Navodya (IT23144330):
 - 7921cbc / 10596a2: suppress post-fix Semgrep false positives with justification
 - PR #21, PR #22, PR #23, PR #24, PR #29, PR #30, PR #32
 
-Bosilu Jinajith (IT22566898):
+Bosilu Jinajith (IT23212268):
 - ef2cffc: fix: prevent stored XSS in attraction descriptions
 - d3a6b1b: fix: resolve Semgrep XSS findings
 - 4945072: fix: restrict and sanitize image uploads
