@@ -1,7 +1,7 @@
 # GoCeylon — Enhanced Security & Identity Federation Platform
 > **SE4030 – Secure Software Development | Academic Group Assignment**  
 > **Sri Lanka Institute of Information Technology (SLIIT)**  
-> **Marks Allocated:** 25 Marks | **Group Size:** 4 Members  
+> **Group ID:** Group 97 | **Group Size:** 4 Members | **Marks Allocated:** 25 Marks  
 > **Production Branch:** `main` (100% Passing DevSecOps CI/CD Security Pipeline)
 
 ---
